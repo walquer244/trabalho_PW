@@ -1,5 +1,5 @@
 <?php
-require '/config/conexao.php';
+// require '/config/conexao.php';
 session_start();
 
 if (isset($_SESSION['usuario_id'])) {
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
 
        
-        <form action="" method="post" class="space-y-5" novalidate>
+        <form action="pagina1.php" method="post" class="space-y-5" novalidate>
 
             
             <div>
@@ -97,12 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
    
-    <div class="bg-white border-transparent rounded-lg">
+    <!-- <div class="bg-white border-transparent rounded-lg">
         <p class="text-center text-slate-500 text-xs mt-6">Primeiro acesso? Execute
             <a href="/_setup/seed.php" class="text-slate-300 hover:text-blue underline transition">_setup/seed.php</a>
             para criar o usuário administrador.
         </p>
-    </div>
+    </div> -->
 
 </div>
 

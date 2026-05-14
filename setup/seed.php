@@ -1,16 +1,4 @@
 <?php
-// ============================================================
-// SEED.PHP - Configuração Inicial do Banco de Dados
-// ============================================================
-// Este arquivo cria o usuário administrador padrão do sistema.
-//
-// QUANDO USAR:
-//   Execute UMA VEZ logo após rodar "docker compose up" pela primeira vez.
-//   Acesse: http://localhost:8080/_setup/seed.php
-//
-// ⚠️  ATENÇÃO: Em um projeto real de produção, este tipo de arquivo
-// deveria ser excluído após o uso. Nunca o deixe acessível publicamente!
-// ============================================================
 
 // Inclui a função de conexão com o banco
 require_once __DIR__ . '/../config/database.php';
