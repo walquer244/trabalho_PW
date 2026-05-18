@@ -1,5 +1,8 @@
 <?php
-// require '/config/conexao.php';
+
+// include("../config/db.php"); 
+// include("../config/auth.php");
+
 session_start();
 
 if (isset($_SESSION['usuario_id'])) {
