@@ -1,0 +1,101 @@
+<?php
+require_once __DIR__ . '/../config.php';
+require_once BASE_PATH . '/includes/header.php';
+$success = $_GET['success'] ?? '';
+$error = $_GET['error'] ?? '';
+try {
+    $stmt = $pdo->query("SELECT * FROM motos ORDER BY id DESC");
+    $motos = $stmt->fetchAll();
+} catch (PDOException $e) {
+    die("Erro ao carregar motocicletas: " . $e->getMessage());
+}
+?>
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-slate-800/80">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">Estoque de Motos</h1>
+            <p class="text-slate-400 text-sm mt-1">Gerenciamento completo do inventário de motocicletas</p>
+        </div>
+        
+        <a href="create.php" class="mt-4 sm:mt-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition shadow-lg shadow-red-600/15">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Adicionar Moto
+        </a>
+    </div>
+    <!-- Banner Alerts -->
+    <?php if (!empty($error)): ?>
+        <div class="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm rounded-2xl flex items-center space-x-2">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <span><?php echo htmlspecialchars($error); ?></span>
+        </div>
+    <?php endif; ?>
+    <?php if (!empty($success)): ?>
+        <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm rounded-2xl flex items-center space-x-2">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span><?php echo htmlspecialchars($success); ?></span>
+        </div>
+    <?php endif; ?>
+    <!-- Inventory Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <?php if (count($motos) > 0): ?>
+            <?php foreach ($motos as $moto): ?>
+                <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl overflow-hidden hover:border-slate-700 transition duration-300 flex flex-col h-full group">
+                    <div class="h-48 overflow-hidden bg-slate-950 relative border-b border-slate-800/60">
+                        <img src="<?php echo htmlspecialchars($moto['imagem_url']); ?>" alt="<?php echo htmlspecialchars($moto['modelo']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-4 left-4 bg-slate-950/80 backdrop-blur-md text-red-500 border border-red-500/20 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <?php echo htmlspecialchars($moto['marca']); ?>
+                        </span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-white leading-snug"><?php echo htmlspecialchars($moto['modelo']); ?></h3>
+                            
+                            <div class="grid grid-cols-3 gap-4 my-4 py-3 border-y border-slate-800/60 text-xs text-slate-400 font-medium">
+                                <div>
+                                    <p class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-0.5">Ano</p>
+                                    <p class="text-slate-200"><?php echo $moto['ano']; ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-0.5">Km</p>
+                                    <p class="text-slate-200"><?php echo format_km($moto['quilometragem']); ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-0.5">Cor</p>
+                                    <p class="text-slate-200 truncate"><?php echo htmlspecialchars($moto['cor']); ?></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-2">
+                            <span class="text-xl font-extrabold text-red-400"><?php echo format_currency($moto['valor']); ?></span>
+                            
+                            <div class="flex items-center space-x-2">
+                                <a href="edit.php?id=<?php echo $moto['id']; ?>" class="p-2 text-slate-400 hover:bg-slate-800/80 hover:text-white rounded-xl border border-transparent hover:border-slate-700 transition" title="Editar">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                                <a href="delete.php?id=<?php echo $moto['id']; ?>" onclick="return confirm('Deseja realmente excluir esta moto do estoque?')" class="p-2 text-rose-500 hover:bg-rose-950/20 rounded-xl border border-transparent hover:border-rose-500/20 transition" title="Excluir">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-span-full py-12 text-center text-slate-500 bg-slate-900/20 border border-slate-800/80 rounded-3xl">
+                Nenhuma moto cadastrada no estoque no momento.
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+<?php require_once BASE_PATH . '/includes/footer.php'; ?>
