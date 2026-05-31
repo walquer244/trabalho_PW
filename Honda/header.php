@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/config.php';
 check_login();
 // Get logged user info
 $userId = $_SESSION['user_id'];
