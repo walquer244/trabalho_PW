@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . '/config.php';
-check_login();
+// check_login();
 // Get logged user info
-$userId = $_SESSION['user_id'];
-$userName = $_SESSION['user_name'];
-$userEmail = $_SESSION['user_email'];
-$userLevel = $_SESSION['user_level'];
+// $userId = $_SESSION['user_id'];
+// $userName = $_SESSION['user_name'];
+// $userEmail = $_SESSION['user_email'];
+// $userLevel = $_SESSION['user_level'];
 // Determine active page for sidebar highlight
 $activePage = basename($_SERVER['PHP_SELF']);
 ?>
@@ -108,7 +108,6 @@ $activePage = basename($_SERVER['PHP_SELF']);
                                 <p class="text-xs text-slate-400">Logado como</p>
                                 <p class="text-sm font-semibold text-slate-200 truncate"><?php echo htmlspecialchars($userEmail); ?></p>
                             </div>
-                            <a href="logout.php" class="flex items-center px-4 py-2.5 text-sm text-rose-400 hover:bg-rose-950/20 transition-colors">
                             <a href="<?php echo BASE_URL; ?>logout.php" class="flex items-center px-4 py-2.5 text-sm text-rose-400 hover:bg-rose-950/20 transition-colors">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>

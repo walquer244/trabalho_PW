@@ -1,21 +1,23 @@
 <?php
+// ============================================================
+// carros/delete.php - Excluir Carro
+// ============================================================
 require_once __DIR__ . '/../config.php';
-// Authentication check
-check_login();
-$id = $_GET['id'] ?? null;
-if ($id) {
-    $id = (int)$id;
-    try {
-        $stmt = $pdo->prepare("DELETE FROM carros WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        header("Location: list.php?success=" . urlencode("Carro excluído com sucesso do estoque."));
-        exit;
-    } catch (PDOException $e) {
-        header("Location: list.php?error=" . urlencode("Erro ao excluir veículo: " . $e->getMessage()));
-        exit;
-    }
-} else {
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($id <= 0) {
     header("Location: list.php");
+    exit;
+}
+
+try {
+    $stmt = $pdo->prepare("DELETE FROM carros WHERE id = :id");
+    $stmt->execute(['id' => $id]);
+    header("Location: list.php?success=" . urlencode("Carro excluído com sucesso."));
+    exit;
+} catch (PDOException $e) {
+    header("Location: list.php?error=" . urlencode("Erro ao excluir: " . $e->getMessage()));
     exit;
 }
 ?>

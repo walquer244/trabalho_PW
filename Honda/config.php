@@ -1,74 +1,101 @@
 <?php
-// Database connection configuration
+// ============================================================
+// config.php - Configuração Central do Sistema Honda
+// ============================================================
 
-// Configuration with Docker support
+// Configuração do banco de dados (suporte a variáveis de ambiente Docker)
 define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
 define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
+define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_NAME', getenv('DB_NAME') ?: 'honda_dealership');
-// Define physical base path on disk
+
+// Caminho físico da raiz do projeto
 define('BASE_PATH', str_replace('\\', '/', __DIR__));
-// Start session if not already started
+
+// Iniciar sessão se ainda não estiver iniciada
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-// Dynamically compute browser BASE_URL
-$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-$docRoot = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? '');
+
+// Calcular BASE_URL dinamicamente
+$docRoot   = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? '');
 $projectDir = str_replace('\\', '/', __DIR__);
-if (!empty($docRoot)) {
-    // If running via standard webserver with document root
+if (!empty($docRoot) && strpos($projectDir, $docRoot) === 0) {
     $subfolder = str_replace($docRoot, '', $projectDir);
-    $baseUrl = '/' . ltrim($subfolder, '/');
-    $baseUrl = rtrim($baseUrl, '/') . '/';
+    $baseUrl   = '/' . ltrim($subfolder, '/');
+    $baseUrl   = rtrim($baseUrl, '/') . '/';
 } else {
-    // CLI fallback
     $baseUrl = '/';
 }
 define('BASE_URL', $baseUrl);
+
+// Conexão com o banco de dados via PDO
 try {
-    // Connect to MySQL (first without database name, to verify/create it if necessary in setup.php)
-    // Connect to MySQL
-    $dsn = "mysql:host=" . DB_HOST . ";charset=utf8mb4";
-    $pdo = new PDO($dsn, DB_USER, DB_PASS, [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ]);
-    // Create database if not exists and select it
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS " . DB_NAME . " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    $pdo->exec("USE " . DB_NAME);
+    $pdo = new PDO(
+        "mysql:host=" . DB_HOST . ";charset=utf8mb4",
+        DB_USER,
+        DB_PASS,
+        [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ]
+    );
+    // Criar banco se não existir e selecionar
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    $pdo->exec("USE `" . DB_NAME . "`");
 } catch (PDOException $e) {
-    // Clean display for connection errors
-    die("Erro de conexão com o banco de dados: " . $e->getMessage());
+    die("<h2 style='color:red;font-family:sans-serif;'>Erro de conexão com o banco de dados:</h2><pre>" . $e->getMessage() . "</pre>");
 }
-// Function to check if user is logged in
-function check_login() {
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php");
+
+// ============================================================
+// Funções auxiliares de formatação
+// ============================================================
+
+/**
+ * Formata um valor monetário em Real Brasileiro
+ */
+function format_currency(float $val): string {
+    return 'R$ ' . number_format($val, 2, ',', '.');
+}
+
+/**
+ * Formata uma data do formato Y-m-d para d/m/Y
+ */
+function format_date(string $date): string {
+    if (empty($date) || $date === '0000-00-00') return '-';
+    return date('d/m/Y', strtotime($date));
+}
+
+/**
+ * Formata quilometragem com separador de milhar
+ */
+function format_km(int $km): string {
+    return number_format($km, 0, ',', '.') . ' km';
+}
+
+// ============================================================
+// Funções de controle de acesso (autenticação por sessão)
+// ============================================================
+
+/**
+ * Verifica se o usuário está logado; redireciona para login se não
+ */
+function check_login(): void {
+    if (empty($_SESSION['user_id'])) {
         header("Location: " . BASE_URL . "login.php");
         exit;
     }
 }
-// Function to check if user has admin access
-function check_admin() {
+
+/**
+ * Verifica se o usuário é admin; redireciona se não for
+ */
+function check_admin(): void {
     check_login();
-    if ($_SESSION['user_level'] !== 'admin') {
-        header("Location: index.php?error=unauthorized");
-        header("Location: " . BASE_URL . "index.php?error=unauthorized");
+    if (($_SESSION['user_level'] ?? '') !== 'admin') {
+        header("Location: " . BASE_URL . "index.php?error=acesso_negado");
         exit;
     }
-}
-// Helper to format currency (BRL - R$)
-function format_currency($val) {
-    return 'R$ ' . number_format($val, 2, ',', '.');
-}
-// Helper to format dates
-function format_date($date) {
-    return date('d/m/Y', strtotime($date));
-}
-// Helper to format mileage
-function format_km($km) {
-    return number_format($km, 0, ',', '.') . ' km';
 }
 ?>
