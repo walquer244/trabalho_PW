@@ -133,15 +133,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </button>
             </form>
         </div>
-
-        <!-- Informações de acesso para teste -->
-        <div class="mt-5 p-4 bg-slate-900/40 border border-slate-800/60 rounded-2xl text-center">
+<!-- 
+        Informações de acesso para teste -->
+        <!-- <div class="mt-5 p-4 bg-slate-900/40 border border-slate-800/60 rounded-2xl text-center">
             <p class="text-xs text-slate-500 leading-relaxed">
                 Primeira vez? Execute
                 <a href="setup.php" class="text-red-400 hover:text-red-300 font-semibold transition">setup.php</a>
                 para criar o banco de dados.
             </p>
-        </div>
+        </div> -->
 
     </div>
 </body>
