@@ -19,36 +19,28 @@ try {
     die("Erro ao carregar dados da moto: " . $e->getMessage());
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $marca = trim($_POST['marca']);
-    $modelo = trim($_POST['modelo']);
-    $ano = (int)$_POST['ano'];
-    $quilometragem = (int)$_POST['quilometragem'];
-    $valor = (float)$_POST['valor'];
-    $cor = trim($_POST['cor']);
-    $imagem_url = trim($_POST['imagem_url']);
+    $marca  = trim($_POST['marca']  ?? '');
+    $modelo = trim($_POST['modelo'] ?? '');
+    $ano    = (int)($_POST['ano']   ?? 0);
+    $cor    = trim($_POST['cor']    ?? '');
+    $valor  = str_replace(',', '.', trim($_POST['valor'] ?? ''));
+
     if (empty($marca) || empty($modelo) || empty($ano) || empty($cor) || !isset($_POST['valor'])) {
         $error = "Por favor, preencha todos os campos obrigatórios.";
     } elseif ($ano < 1900 || $ano > date('Y') + 1) {
         $error = "Ano de fabricação inválido.";
-    } elseif ($quilometragem < 0) {
-        $error = "A quilometragem não pode ser negativa.";
-    } elseif ($valor <= 0) {
+    } elseif ((float)$valor <= 0) {
         $error = "O valor deve ser maior que zero.";
     } else {
-        if (empty($imagem_url)) {
-            $imagem_url = "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=600";
-        }
         try {
-            $stmt = $pdo->prepare("UPDATE motos SET marca = :marca, modelo = :modelo, ano = :ano, quilometragem = :quilometragem, valor = :valor, cor = :cor, imagem_url = :imagem_url WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE motos SET marca = :marca, modelo = :modelo, ano = :ano, cor = :cor, valor = :valor WHERE id = :id");
             $stmt->execute([
-                'marca' => $marca,
+                'marca'  => $marca,
                 'modelo' => $modelo,
-                'ano' => $ano,
-                'quilometragem' => $quilometragem,
-                'valor' => $valor,
-                'cor' => $cor,
-                'imagem_url' => $imagem_url,
-                'id' => $id
+                'ano'    => $ano,
+                'cor'    => $cor,
+                'valor'  => (float)$valor,
+                'id'     => $id
             ]);
             header("Location: list.php?success=" . urlencode("Moto atualizada com sucesso."));
             exit;
@@ -78,60 +70,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
     <div class="max-w-2xl bg-slate-900/40 border border-slate-800/80 p-8 rounded-3xl shadow-xl">
         <form action="edit.php?id=<?php echo $id; ?>" method="POST" class="space-y-6">
+            <!-- Marca e Modelo -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                    <label for="marca" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Marca</label>
-                    <select name="marca" id="marca" required
-                            class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 focus:outline-none transition text-sm">
-                        <option value="Honda" <?php echo $moto['marca'] === 'Honda' ? 'selected' : ''; ?>>Honda</option>
-                        <option value="Kawasaki" <?php echo $moto['marca'] === 'Kawasaki' ? 'selected' : ''; ?>>Kawasaki</option>
-                        <option value="Suzuki" <?php echo $moto['marca'] === 'Suzuki' ? 'selected' : ''; ?>>Suzuki</option>
-                        <option value="Yamaha" <?php echo $moto['marca'] === 'Yamaha' ? 'selected' : ''; ?>>Yamaha</option>
-                        <option value="BMW" <?php echo $moto['marca'] === 'BMW' ? 'selected' : ''; ?>>BMW</option>
-                        <option value="Triumph" <?php echo $moto['marca'] === 'Triumph' ? 'selected' : ''; ?>>Triumph</option>
-                        <option value="Ducati" <?php echo $moto['marca'] === 'Ducati' ? 'selected' : ''; ?>>Ducati</option>
-                    </select>
+                    <label for="marca" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Marca <span class="text-red-500">*</span></label>
+                    <input type="text" name="marca" id="marca" required placeholder="Ex: Honda, Yamaha..."
+                           value="<?php echo htmlspecialchars($_POST['marca'] ?? $moto['marca']); ?>"
+                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
                 </div>
                 <div>
-                    <label for="modelo" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Modelo</label>
-                    <input type="text" name="modelo" id="modelo" required placeholder="CB 500F"
+                    <label for="modelo" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Modelo <span class="text-red-500">*</span></label>
+                    <input type="text" name="modelo" id="modelo" required placeholder="Ex: CB 500F, Fazer 250..."
                            value="<?php echo htmlspecialchars($_POST['modelo'] ?? $moto['modelo']); ?>"
                            class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
                 </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <!-- Cor e Ano de Fabricação -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                    <label for="ano" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Ano de Fabricação</label>
+                    <label for="cor" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cor <span class="text-red-500">*</span></label>
+                    <input type="text" name="cor" id="cor" required placeholder="Ex: Vermelho, Preto..."
+                           value="<?php echo htmlspecialchars($_POST['cor'] ?? $moto['cor']); ?>"
+                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
+                </div>
+                <div>
+                    <label for="ano" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Ano de Fabricação <span class="text-red-500">*</span></label>
                     <input type="number" name="ano" id="ano" required min="1900" max="<?php echo date('Y') + 1; ?>"
                            value="<?php echo htmlspecialchars($_POST['ano'] ?? $moto['ano']); ?>"
                            class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
                 </div>
-                <div>
-                    <label for="quilometragem" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Quilometragem (km)</label>
-                    <input type="number" name="quilometragem" id="quilometragem" required min="0"
-                           value="<?php echo htmlspecialchars($_POST['quilometragem'] ?? $moto['quilometragem']); ?>"
-                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
-                </div>
-                <div>
-                    <label for="cor" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cor</label>
-                    <input type="text" name="cor" id="cor" required placeholder="Vermelho Sunset"
-                           value="<?php echo htmlspecialchars($_POST['cor'] ?? $moto['cor']); ?>"
-                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
-                </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                    <label for="valor" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Preço de Venda (R$)</label>
-                    <input type="number" step="0.01" name="valor" id="valor" required placeholder="39900.00"
-                           value="<?php echo htmlspecialchars($_POST['valor'] ?? $moto['valor']); ?>"
-                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
-                </div>
-                <div>
-                    <label for="imagem_url" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Link da Imagem (Opcional)</label>
-                    <input type="url" name="imagem_url" id="imagem_url" placeholder="https://..."
-                           value="<?php echo htmlspecialchars($_POST['imagem_url'] ?? $moto['imagem_url']); ?>"
-                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
-                </div>
+            <!-- Valor -->
+            <div>
+                <label for="valor" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Preço de Venda (R$) <span class="text-red-500">*</span></label>
+                <input type="number" step="0.01" name="valor" id="valor" required placeholder="Ex: 39900.00"
+                       value="<?php echo htmlspecialchars($_POST['valor'] ?? $moto['valor']); ?>"
+                       class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-2.5 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
             </div>
             <div class="flex items-center space-x-4 pt-4 border-t border-slate-800/80">
                 <button type="submit" class="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold py-2.5 px-6 rounded-xl transition text-sm shadow-lg shadow-red-600/15">

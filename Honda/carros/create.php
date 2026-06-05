@@ -7,28 +7,30 @@ require_once __DIR__ . '/../config.php';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $marca         = trim($_POST['marca']         ?? '');
-    $quilometragem = (int)($_POST['quilometragem'] ?? 0);
-    $valor         = str_replace(',', '.', trim($_POST['valor'] ?? ''));
-    $cor           = trim($_POST['cor']           ?? '');
+    $marca  = trim($_POST['marca']  ?? '');
+    $modelo = trim($_POST['modelo'] ?? '');
+    $cor    = trim($_POST['cor']    ?? '');
+    $ano    = (int)($_POST['ano']   ?? 0);
+    $valor  = str_replace(',', '.', trim($_POST['valor'] ?? ''));
 
     // Validações
-    if (empty($marca) || empty($cor) || !isset($_POST['valor'])) {
+    if (empty($marca) || empty($modelo) || empty($cor) || empty($ano) || !isset($_POST['valor'])) {
         $error = 'Por favor, preencha todos os campos obrigatórios.';
     } elseif ((float)$valor <= 0) {
         $error = 'O valor do carro deve ser maior que zero.';
-    } elseif ($quilometragem < 0) {
-        $error = 'A quilometragem não pode ser negativa.';
+    } elseif ($ano < 1900 || $ano > (int)date('Y') + 1) {
+        $error = 'Ano de fabricação inválido.';
     } else {
         try {
             $stmt = $pdo->prepare(
-                "INSERT INTO carros (marca, quilometragem, valor, cor) VALUES (:marca, :quilometragem, :valor, :cor)"
+                "INSERT INTO carros (marca, modelo, cor, ano, valor) VALUES (:marca, :modelo, :cor, :ano, :valor)"
             );
             $stmt->execute([
-                'marca'         => $marca,
-                'quilometragem' => $quilometragem,
-                'valor'         => (float)$valor,
-                'cor'           => $cor,
+                'marca'  => $marca,
+                'modelo' => $modelo,
+                'cor'    => $cor,
+                'ano'    => $ano,
+                'valor'  => (float)$valor,
             ]);
             header("Location: list.php?success=" . urlencode("Carro cadastrado com sucesso!"));
             exit;
@@ -69,18 +71,29 @@ require_once BASE_PATH . '/includes/header.php';
     <div class="max-w-2xl bg-slate-900/40 border border-slate-800/80 p-8 rounded-3xl shadow-xl">
         <form action="create.php" method="POST" id="form-create-carro" class="space-y-6">
 
-            <!-- Marca -->
-            <div>
-                <label for="marca" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                    Marca <span class="text-red-500">*</span>
-                </label>
-                <input type="text" name="marca" id="marca" required
-                       placeholder="Ex: Honda, Toyota, Fiat..."
-                       value="<?php echo htmlspecialchars($_POST['marca'] ?? ''); ?>"
-                       class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
+            <!-- Marca e Modelo -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="marca" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                        Marca <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="marca" id="marca" required
+                           placeholder="Ex: Honda, Toyota, Fiat..."
+                           value="<?php echo htmlspecialchars($_POST['marca'] ?? ''); ?>"
+                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
+                </div>
+                <div>
+                    <label for="modelo" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                        Modelo <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="modelo" id="modelo" required
+                           placeholder="Ex: Civic, Corolla, Uno..."
+                           value="<?php echo htmlspecialchars($_POST['modelo'] ?? ''); ?>"
+                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
+                </div>
             </div>
 
-            <!-- Cor e Quilometragem -->
+            <!-- Cor e Ano de Fabricação -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                     <label for="cor" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
@@ -92,12 +105,12 @@ require_once BASE_PATH . '/includes/header.php';
                            class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
                 </div>
                 <div>
-                    <label for="quilometragem" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                        Quilometragem (km) <span class="text-red-500">*</span>
+                    <label for="ano" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                        Ano de Fabricação <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" name="quilometragem" id="quilometragem" required min="0"
-                           placeholder="0"
-                           value="<?php echo htmlspecialchars($_POST['quilometragem'] ?? '0'); ?>"
+                    <input type="number" name="ano" id="ano" required min="1900" max="<?php echo date('Y') + 1; ?>"
+                           placeholder="<?php echo date('Y'); ?>"
+                           value="<?php echo htmlspecialchars($_POST['ano'] ?? date('Y')); ?>"
                            class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
                 </div>
             </div>

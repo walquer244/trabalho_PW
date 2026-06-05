@@ -140,8 +140,8 @@ require_once BASE_PATH . '/includes/header.php';
                     <?php foreach ($recentCarros as $c): ?>
                         <div class="flex items-center justify-between p-4 bg-slate-900/70 border border-slate-800/80 rounded-2xl hover:border-slate-700 transition">
                             <div class="min-w-0">
-                                <h4 class="text-sm font-bold text-slate-200 truncate"><?php echo htmlspecialchars($c['marca']); ?></h4>
-                                <p class="text-xs text-slate-400 mt-0.5"><?php echo htmlspecialchars($c['cor']); ?> • <?php echo format_km((int)$c['quilometragem']); ?></p>
+                                <h4 class="text-sm font-bold text-slate-200 truncate"><?php echo htmlspecialchars($c['marca'] . ' ' . $c['modelo']); ?></h4>
+                                <p class="text-xs text-slate-400 mt-0.5"><?php echo htmlspecialchars($c['cor']); ?> • <?php echo $c['ano']; ?></p>
                             </div>
                             <span class="text-sm font-bold text-red-400 flex-shrink-0 ml-4"><?php echo format_currency((float)$c['valor']); ?></span>
                         </div>
@@ -171,8 +171,8 @@ require_once BASE_PATH . '/includes/header.php';
                     <?php foreach ($recentMotos as $m): ?>
                         <div class="flex items-center justify-between p-4 bg-slate-900/70 border border-slate-800/80 rounded-2xl hover:border-slate-700 transition">
                             <div class="min-w-0">
-                                <h4 class="text-sm font-bold text-slate-200 truncate"><?php echo htmlspecialchars($m['marca']); ?></h4>
-                                <p class="text-xs text-slate-400 mt-0.5"><?php echo htmlspecialchars($m['cor']); ?> • <?php echo format_km((int)$m['quilometragem']); ?></p>
+                                <h4 class="text-sm font-bold text-slate-200 truncate"><?php echo htmlspecialchars($m['marca'] . ' ' . $m['modelo']); ?></h4>
+                                <p class="text-xs text-slate-400 mt-0.5"><?php echo htmlspecialchars($m['cor']); ?> • <?php echo $m['ano']; ?></p>
                             </div>
                             <span class="text-sm font-bold text-amber-400 flex-shrink-0 ml-4"><?php echo format_currency((float)$m['valor']); ?></span>
                         </div>

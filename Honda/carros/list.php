@@ -59,8 +59,9 @@ require_once BASE_PATH . '/includes/header.php';
                     <tr class="bg-slate-900/60 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
                         <th class="py-4 px-6">#</th>
                         <th class="py-4 px-6">Marca</th>
+                        <th class="py-4 px-6">Modelo</th>
                         <th class="py-4 px-6">Cor</th>
-                        <th class="py-4 px-6">Quilometragem</th>
+                        <th class="py-4 px-6">Ano</th>
                         <th class="py-4 px-6">Valor</th>
                         <th class="py-4 px-6 text-center">Ações</th>
                     </tr>
@@ -71,12 +72,13 @@ require_once BASE_PATH . '/includes/header.php';
                             <tr class="hover:bg-slate-900/30 transition-colors">
                                 <td class="py-4 px-6 text-slate-500 font-mono text-xs">#<?php echo $car['id']; ?></td>
                                 <td class="py-4 px-6 font-bold text-white"><?php echo htmlspecialchars($car['marca']); ?></td>
+                                <td class="py-4 px-6 text-slate-300"><?php echo htmlspecialchars($car['modelo']); ?></td>
                                 <td class="py-4 px-6">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
                                         <?php echo htmlspecialchars($car['cor']); ?>
                                     </span>
                                 </td>
-                                <td class="py-4 px-6 text-slate-400"><?php echo format_km((int)$car['quilometragem']); ?></td>
+                                <td class="py-4 px-6 text-slate-400 font-medium"><?php echo $car['ano']; ?></td>
                                 <td class="py-4 px-6 font-bold text-red-400"><?php echo format_currency((float)$car['valor']); ?></td>
                                 <td class="py-4 px-6 text-center">
                                     <div class="flex items-center justify-center space-x-2">
@@ -103,7 +105,7 @@ require_once BASE_PATH . '/includes/header.php';
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="py-12 px-6 text-center text-slate-500">
+                            <td colspan="7" class="py-12 px-6 text-center text-slate-500">
                                 Nenhum carro cadastrado. <a href="create.php" class="text-red-400 hover:underline">Adicionar o primeiro.</a>
                             </td>
                         </tr>

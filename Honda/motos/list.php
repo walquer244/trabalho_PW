@@ -43,59 +43,65 @@ try {
         </div>
     <?php endif; ?>
     <!-- Inventory Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        <?php if (count($motos) > 0): ?>
-            <?php foreach ($motos as $moto): ?>
-                <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl overflow-hidden hover:border-slate-700 transition duration-300 flex flex-col h-full group">
-                    <div class="h-48 overflow-hidden bg-slate-950 relative border-b border-slate-800/60">
-                        <img src="<?php echo htmlspecialchars($moto['imagem_url']); ?>" alt="<?php echo htmlspecialchars($moto['modelo']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <span class="absolute top-4 left-4 bg-slate-950/80 backdrop-blur-md text-red-500 border border-red-500/20 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                            <?php echo htmlspecialchars($moto['marca']); ?>
-                        </span>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-lg font-bold text-white leading-snug"><?php echo htmlspecialchars($moto['modelo']); ?></h3>
-                            
-                            <div class="grid grid-cols-3 gap-4 my-4 py-3 border-y border-slate-800/60 text-xs text-slate-400 font-medium">
-                                <div>
-                                    <p class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-0.5">Ano</p>
-                                    <p class="text-slate-200"><?php echo $moto['ano']; ?></p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-0.5">Km</p>
-                                    <p class="text-slate-200"><?php echo format_km($moto['quilometragem']); ?></p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-0.5">Cor</p>
-                                    <p class="text-slate-200 truncate"><?php echo htmlspecialchars($moto['cor']); ?></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between pt-2">
-                            <span class="text-xl font-extrabold text-red-400"><?php echo format_currency($moto['valor']); ?></span>
-                            
-                            <div class="flex items-center space-x-2">
-                                <a href="edit.php?id=<?php echo $moto['id']; ?>" class="p-2 text-slate-400 hover:bg-slate-800/80 hover:text-white rounded-xl border border-transparent hover:border-slate-700 transition" title="Editar">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                </a>
-                                <a href="delete.php?id=<?php echo $moto['id']; ?>" onclick="return confirm('Deseja realmente excluir esta moto do estoque?')" class="p-2 text-rose-500 hover:bg-rose-950/20 rounded-xl border border-transparent hover:border-rose-500/20 transition" title="Excluir">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <div class="col-span-full py-12 text-center text-slate-500 bg-slate-900/20 border border-slate-800/80 rounded-3xl">
-                Nenhuma moto cadastrada no estoque no momento.
-            </div>
-        <?php endif; ?>
+    <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-900/60 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <th class="py-4 px-6">#</th>
+                        <th class="py-4 px-6">Marca</th>
+                        <th class="py-4 px-6">Modelo</th>
+                        <th class="py-4 px-6">Cor</th>
+                        <th class="py-4 px-6">Ano</th>
+                        <th class="py-4 px-6">Valor</th>
+                        <th class="py-4 px-6 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 text-sm text-slate-300">
+                    <?php if (count($motos) > 0): ?>
+                        <?php foreach ($motos as $moto): ?>
+                            <tr class="hover:bg-slate-900/30 transition-colors">
+                                <td class="py-4 px-6 text-slate-500 font-mono text-xs">#<?php echo $moto['id']; ?></td>
+                                <td class="py-4 px-6 font-bold text-white"><?php echo htmlspecialchars($moto['marca']); ?></td>
+                                <td class="py-4 px-6 text-slate-300"><?php echo htmlspecialchars($moto['modelo']); ?></td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                                        <?php echo htmlspecialchars($moto['cor']); ?>
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-slate-400 font-medium"><?php echo $moto['ano']; ?></td>
+                                <td class="py-4 px-6 font-bold text-red-400"><?php echo format_currency((float)$moto['valor']); ?></td>
+                                <td class="py-4 px-6 text-center">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <a href="edit.php?id=<?php echo $moto['id']; ?>"
+                                           title="Editar"
+                                           class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl border border-transparent hover:border-slate-700 transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </a>
+                                        <a href="delete.php?id=<?php echo $moto['id']; ?>"
+                                           title="Excluir"
+                                           onclick="return confirm('Deseja realmente excluir esta moto do estoque?')"
+                                           class="p-2 text-rose-500 hover:text-rose-400 hover:bg-rose-950/20 rounded-xl border border-transparent hover:border-rose-500/20 transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" class="py-12 px-6 text-center text-slate-500">
+                                Nenhuma moto cadastrada no estoque no momento. <a href="create.php" class="text-red-400 hover:underline">Adicionar a primeira.</a>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <?php require_once BASE_PATH . '/includes/footer.php'; ?>

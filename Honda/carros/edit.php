@@ -28,29 +28,31 @@ $error = '';
 
 // Processa o formulário de atualização
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $marca         = trim($_POST['marca']         ?? '');
-    $quilometragem = (int)($_POST['quilometragem'] ?? 0);
-    $valor         = str_replace(',', '.', trim($_POST['valor'] ?? ''));
-    $cor           = trim($_POST['cor']           ?? '');
+    $marca  = trim($_POST['marca']  ?? '');
+    $modelo = trim($_POST['modelo'] ?? '');
+    $cor    = trim($_POST['cor']    ?? '');
+    $ano    = (int)($_POST['ano']   ?? 0);
+    $valor  = str_replace(',', '.', trim($_POST['valor'] ?? ''));
 
     // Validações
-    if (empty($marca) || empty($cor) || !isset($_POST['valor'])) {
+    if (empty($marca) || empty($modelo) || empty($cor) || empty($ano) || !isset($_POST['valor'])) {
         $error = 'Por favor, preencha todos os campos obrigatórios.';
     } elseif ((float)$valor <= 0) {
         $error = 'O valor deve ser maior que zero.';
-    } elseif ($quilometragem < 0) {
-        $error = 'A quilometragem não pode ser negativa.';
+    } elseif ($ano < 1900 || $ano > (int)date('Y') + 1) {
+        $error = 'Ano de fabricação inválido.';
     } else {
         try {
             $stmt = $pdo->prepare(
-                "UPDATE carros SET marca = :marca, quilometragem = :quilometragem, valor = :valor, cor = :cor WHERE id = :id"
+                "UPDATE carros SET marca = :marca, modelo = :modelo, cor = :cor, ano = :ano, valor = :valor WHERE id = :id"
             );
             $stmt->execute([
-                'marca'         => $marca,
-                'quilometragem' => $quilometragem,
-                'valor'         => (float)$valor,
-                'cor'           => $cor,
-                'id'            => $id,
+                'marca'  => $marca,
+                'modelo' => $modelo,
+                'cor'    => $cor,
+                'ano'    => $ano,
+                'valor'  => (float)$valor,
+                'id'     => $id,
             ]);
             header("Location: list.php?success=" . urlencode("Carro atualizado com sucesso!"));
             exit;
@@ -91,18 +93,29 @@ require_once BASE_PATH . '/includes/header.php';
     <div class="max-w-2xl bg-slate-900/40 border border-slate-800/80 p-8 rounded-3xl shadow-xl">
         <form action="edit.php?id=<?php echo $id; ?>" method="POST" id="form-edit-carro-<?php echo $id; ?>" class="space-y-6">
 
-            <!-- Marca -->
-            <div>
-                <label for="marca" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                    Marca <span class="text-red-500">*</span>
-                </label>
-                <input type="text" name="marca" id="marca" required
-                       placeholder="Ex: Honda, Toyota, Fiat..."
-                       value="<?php echo htmlspecialchars($_POST['marca'] ?? $car['marca']); ?>"
-                       class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
+            <!-- Marca e Modelo -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="marca" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                        Marca <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="marca" id="marca" required
+                           placeholder="Ex: Honda, Toyota, Fiat..."
+                           value="<?php echo htmlspecialchars($_POST['marca'] ?? $car['marca']); ?>"
+                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
+                </div>
+                <div>
+                    <label for="modelo" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                        Modelo <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="modelo" id="modelo" required
+                           placeholder="Ex: Civic, Corolla, Uno..."
+                           value="<?php echo htmlspecialchars($_POST['modelo'] ?? $car['modelo']); ?>"
+                           class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
+                </div>
             </div>
 
-            <!-- Cor e Quilometragem -->
+            <!-- Cor e Ano de Fabricação -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                     <label for="cor" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
@@ -114,11 +127,11 @@ require_once BASE_PATH . '/includes/header.php';
                            class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
                 </div>
                 <div>
-                    <label for="quilometragem" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                        Quilometragem (km) <span class="text-red-500">*</span>
+                    <label for="ano" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                        Ano de Fabricação <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" name="quilometragem" id="quilometragem" required min="0"
-                           value="<?php echo htmlspecialchars($_POST['quilometragem'] ?? $car['quilometragem']); ?>"
+                    <input type="number" name="ano" id="ano" required min="1900" max="<?php echo date('Y') + 1; ?>"
+                           value="<?php echo htmlspecialchars($_POST['ano'] ?? $car['ano']); ?>"
                            class="w-full bg-slate-950/60 border border-slate-800 hover:border-slate-700 focus:border-red-500 rounded-xl py-3 px-4 text-slate-200 placeholder-slate-600 focus:outline-none transition text-sm">
                 </div>
             </div>

@@ -24,27 +24,31 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 -- ============================================================
 -- 2. Tabela de Carros (carros)
--- Armazena: Valor, Marca, Quilometragem, Cor
+-- Armazena: Valor, Marca, Modelo, Cor, Ano de Fabricação
 -- ============================================================
+DROP TABLE IF EXISTS carros;
 CREATE TABLE IF NOT EXISTS carros (
     id            INT AUTO_INCREMENT PRIMARY KEY,
     marca         VARCHAR(80)     NOT NULL,
-    quilometragem INT             NOT NULL DEFAULT 0,
-    valor         DECIMAL(12, 2)  NOT NULL,
+    modelo        VARCHAR(100)    NOT NULL,
     cor           VARCHAR(50)     NOT NULL,
+    ano           INT             NOT NULL,
+    valor         DECIMAL(12, 2)  NOT NULL,
     data_cadastro TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================
 -- 3. Tabela de Motos (motos)
--- Armazena: Valor, Marca, Quilometragem, Cor
+-- Armazena: Valor, Marca, Modelo, Cor, Ano de Fabricação
 -- ============================================================
+DROP TABLE IF EXISTS motos;
 CREATE TABLE IF NOT EXISTS motos (
     id            INT AUTO_INCREMENT PRIMARY KEY,
     marca         VARCHAR(80)     NOT NULL,
-    quilometragem INT             NOT NULL DEFAULT 0,
-    valor         DECIMAL(12, 2)  NOT NULL,
+    modelo        VARCHAR(100)    NOT NULL,
     cor           VARCHAR(50)     NOT NULL,
+    ano           INT             NOT NULL,
+    valor         DECIMAL(12, 2)  NOT NULL,
     data_cadastro TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
