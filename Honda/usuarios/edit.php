@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "E-mail inválido.";
     } else {
         try {
-            // Check duplicate email
             $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = :email AND id != :id");
             $stmt->execute(['email' => $email, 'id' => $id]);
             if ($stmt->fetch()) {
@@ -56,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ]);
                 }
                 
-                // If editing current logged user, update session values
                 if ($id === (int)$_SESSION['user_id']) {
                     $_SESSION['user_name'] = $nome;
                     $_SESSION['user_email'] = $email;

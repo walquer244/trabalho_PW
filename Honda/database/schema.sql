@@ -1,18 +1,10 @@
--- ============================================================
--- Sistema Honda - Schema do Banco de Dados
--- Barbearia Honda
--- ============================================================
-
 CREATE DATABASE IF NOT EXISTS honda_dealership
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
 USE honda_dealership;
 
--- ============================================================
--- 1. Tabela de Usuários (usuarios)
--- Armazena os usuários que se cadastram no sistema
--- ============================================================
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id            INT AUTO_INCREMENT PRIMARY KEY,
     nome          VARCHAR(100) NOT NULL,
@@ -22,10 +14,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
--- 2. Tabela de Carros (carros)
--- Armazena: Valor, Marca, Modelo, Cor, Ano de Fabricação
--- ============================================================
+
 DROP TABLE IF EXISTS carros;
 CREATE TABLE IF NOT EXISTS carros (
     id            INT AUTO_INCREMENT PRIMARY KEY,
@@ -37,10 +26,7 @@ CREATE TABLE IF NOT EXISTS carros (
     data_cadastro TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
--- 3. Tabela de Motos (motos)
--- Armazena: Valor, Marca, Modelo, Cor, Ano de Fabricação
--- ============================================================
+
 DROP TABLE IF EXISTS motos;
 CREATE TABLE IF NOT EXISTS motos (
     id            INT AUTO_INCREMENT PRIMARY KEY,
@@ -52,10 +38,7 @@ CREATE TABLE IF NOT EXISTS motos (
     data_cadastro TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
--- 4. Tabela de Funcionários (funcionarios)
--- Armazena: Função, Data de Admissão, Data de Nascimento, Salário
--- ============================================================
+
 CREATE TABLE IF NOT EXISTS funcionarios (
     id              INT AUTO_INCREMENT PRIMARY KEY,
     nome            VARCHAR(100)   NOT NULL,

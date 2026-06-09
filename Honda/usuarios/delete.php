@@ -1,12 +1,10 @@
 <?php
 require_once __DIR__ . '/../config.php';
-// Authentication and role check
 check_admin();
 $id = $_GET['id'] ?? null;
 if ($id) {
     $id = (int)$id;
     
-    // Prevent deleting oneself
     if ($id === (int)$_SESSION['user_id']) {
         header("Location: list.php?error=" . urlencode("Você não pode excluir sua própria conta."));
         exit;

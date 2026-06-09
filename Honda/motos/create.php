@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'cor'    => $cor,
                 'valor'  => (float)$valor
             ]);
-            header("Location: list.php?success=" . urlencode("Moto adicionada com sucesso."));
+            header("Location: list.php?success=" . urlencode("Moto cadastrada com sucesso!"));
             exit;
         } catch (PDOException $e) {
             $error = "Erro ao salvar motocicleta: " . $e->getMessage();

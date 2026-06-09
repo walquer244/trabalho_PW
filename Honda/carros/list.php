@@ -1,7 +1,4 @@
 <?php
-// ============================================================
-// carros/list.php - Listagem de Carros
-// ============================================================
 require_once __DIR__ . '/../config.php';
 
 $success = htmlspecialchars($_GET['success'] ?? '');

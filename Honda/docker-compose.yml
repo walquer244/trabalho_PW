@@ -1,6 +1,6 @@
 version: '3.8'
+
 services:
-  # 1. PHP + Apache Web Service
   app:
     build: .
     container_name: honda_dealership_app
@@ -9,7 +9,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_USER=root
-      - DB_PASS=secret
+      - DB_PASS=secret   
       - DB_NAME=honda_dealership
     depends_on:
       - db
@@ -17,6 +17,7 @@ services:
       - .:/var/www/html
     networks:
       - honda_network
+
   # 2. MySQL Database Service
   db:
     image: mysql:8.0
@@ -31,8 +32,26 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - honda_network
+
+  # 3. phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8090:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_PASSWORD=secret  
+    networks:
+      - honda_network
+
 volumes:
   db_data:
+
 networks:
   honda_network:
     driver: bridge
